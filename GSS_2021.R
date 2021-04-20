@@ -27,16 +27,39 @@ PAMdata3 <-subset(PAMdata2, Fit_error != "32000")
 
   ### Convert Week to factor
 PAMdata3$Week <-factor(PAMdata3$Week)
-        
+   
+  ### assign factor and levels for fit error
+chla$fit_error <- factor(chla$fit_error, levels = c("0","0-1", "> 1"))     
 
 #######################################################################
-  ########################    DIVERSITY   #########################
-#######################################################################
+  #####################    SUBSETTING DATA    #####################
+
+  ### Subset chla by PhytoPAM_chla range: 50, 100, 200
+  ### Want to see if linearity is better at lower or higher PhytoPAM_chla
+less50<-subset(chla2, PhytoPAM_chla <= 50)
+less100<-subset(chla2, PhytoPAM_chla <= 100)
+less200<-subset(chla2, PhytoPAM_chla <= 200)
+greater200<-subset(chla2, PhytoPAM_chla >= 200)
 
 
+#########################################################################
+  ####################### LINEAR REGRESSION ##########################
 
-
-
+ggplot(less200, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
+  geom_point(colour="black", size = 4) + 
+  stat_smooth(method = 'lm', aes(color = 'linear'), se = TRUE) + ## Turns on confidence intervals
+  stat_poly_eq(aes(label = ..eq.label..), formula = y ~ x, parse = TRUE, size = 6) +                                 ## Turns on equation
+  stat_cor(label.x.npc = "center", label.y.npc = "bottom", size = 6) + ## Turns on r value
+  labs(y = expression(paste('PhytoPAM-derived Chl a (', mu, 'g/L)')),
+       x = expression(paste('Spectrophotometric Chl a (', mu, 'g/L)'))) +
+  #scale_y_continuous(position = "right") +  ## places y scale on right
+  #facet_wrap(~fit_error, scales = "free", ncol = 3) +
+  theme_classic() +
+  theme(axis.text.y.left = element_text(size=28, color = "black"), 
+        axis.text.x.bottom = element_text(size=28, color = "black"),
+        axis.title.x = element_text(size=28),
+        axis.title.y = element_text(size=28),
+        strip.text = element_text(size = 28))
 
 #######################################################################
   ###################    SIGNIFICANCE TESTING   ##################
@@ -67,7 +90,7 @@ ggplot(PAMdata4, aes(x = Month, y = chla, fill = taxa)) +
   labs(y = expression(paste('PhytoPAM Chl a (', mu, 'g/L)'))) +
   scale_fill_discrete(labels = c("'Brown' group", "'Blue' group",
                                  "'Green' group","'Red' group")) +
-  facet_wrap(.~Year, scale = "free", ncol = 1) +
+  #facet_wrap(.~Year, scale = "free", ncol = 1) +
   theme(panel.background = element_blank(),
         axis.title.y = element_text(size = 22),
         axis.title.x = element_text(size = 22),
@@ -81,33 +104,18 @@ ggplot(PAMdata4, aes(x = Month, y = chla, fill = taxa)) +
 
 
 
-#########################################################################
-  #################### HISTOGRAM: MICROCYSTIN ########################
-#########################################################################
-  ## Use 2018-2020 microcystin data
-ggplot(mc_data, aes(x = microcystin)) + 
-  geom_histogram(aes(x = microcystin)) +
-  facet_wrap(.~year, scale = "free_x") +
-  theme(axis.title.y = element_text(color = "black", size = 22), 
-        panel.background = element_blank(),
-        plot.title = element_text(size = 22, color = "black"),
-        panel.grid.major = element_line(color = "black"),
-        axis.text = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        strip.text = element_text(size = 22, color = "black"), ##text of graph titles in facet wrap
-        legend.text = element_text(size = 22),
-        legend.title = element_text(size = 22),
-        panel.grid.major.y = element_blank(),
-        axis.line.x = element_line(color = "black"),
-        axis.line.y = element_line(color = "black"))
+
+
+
 
 
 #########################################################################
   ####################### LINEAR REGRESSION ##########################
-#########################################################################
+
 chla<-na.omit(chla)
 chla$fit_error <- factor(chla$fit_error, levels = c("0","0-1", "> 1"))
-ggplot(chla, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
+
+ggplot(chla2, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
   geom_point(colour="black", size = 4) + 
   stat_smooth(method = 'lm', aes(color = 'linear'), se = TRUE) + ## Turns on confidence intervals
   stat_poly_eq(aes(label = ..eq.label..), formula = y ~ x, parse = TRUE, size = 6) +                                 ## Turns on equation
