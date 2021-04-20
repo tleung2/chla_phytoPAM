@@ -42,25 +42,6 @@ less200<-subset(chla2, PhytoPAM_chla <= 200)
 greater200<-subset(chla2, PhytoPAM_chla >= 200)
 
 
-#########################################################################
-  ####################### LINEAR REGRESSION ##########################
-
-ggplot(less200, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
-  geom_point(colour="black", size = 4) + 
-  stat_smooth(method = 'lm', aes(color = 'linear'), se = TRUE) + ## Turns on confidence intervals
-  stat_poly_eq(aes(label = ..eq.label..), formula = y ~ x, parse = TRUE, size = 6) +                                 ## Turns on equation
-  stat_cor(label.x.npc = "center", label.y.npc = "bottom", size = 6) + ## Turns on r value
-  labs(y = expression(paste('PhytoPAM-derived Chl a (', mu, 'g/L)')),
-       x = expression(paste('Spectrophotometric Chl a (', mu, 'g/L)'))) +
-  #scale_y_continuous(position = "right") +  ## places y scale on right
-  #facet_wrap(~fit_error, scales = "free", ncol = 3) +
-  theme_classic() +
-  theme(axis.text.y.left = element_text(size=28, color = "black"), 
-        axis.text.x.bottom = element_text(size=28, color = "black"),
-        axis.title.x = element_text(size=28),
-        axis.title.y = element_text(size=28),
-        strip.text = element_text(size = 28))
-
 #######################################################################
   ###################    SIGNIFICANCE TESTING   ##################
   
@@ -78,18 +59,22 @@ pairwise.wilcox.test(fe.data3$Fe, fe.data3$site,
 #######################################################################
   ########################    BOXPLOTS   #########################
 
-  ### Pivot longer and re-shape data
+  ### --------   Boxplot: taxa specific chla each month   ----------
+
+  ### Looks at range in chla for each taxa during each month
+  ### 1) Pivot longer and re-shape data
   ### Make column for taxa and another for chlorophyll value
 PAMdata4<- pivot_longer(PAMdata3, cols = c(8:11),
                         names_to = c("taxa"),
                         values_to = "chla")
 
-  ### Make boxplot and group by taxa
+  ### 2) Make boxplot and group by taxa
+  ### scale_fill_discrete(labels = c()) --> manually assign legend labels
 ggplot(PAMdata4, aes(x = Month, y = chla, fill = taxa)) +
   geom_boxplot() +
   labs(y = expression(paste('PhytoPAM Chl a (', mu, 'g/L)'))) +
   scale_fill_discrete(labels = c("'Brown' group", "'Blue' group",
-                                 "'Green' group","'Red' group")) +
+                                 "'Green' group","'Red' group")) + 
   #facet_wrap(.~Year, scale = "free", ncol = 1) +
   theme(panel.background = element_blank(),
         axis.title.y = element_text(size = 22),
@@ -102,19 +87,38 @@ ggplot(PAMdata4, aes(x = Month, y = chla, fill = taxa)) +
         legend.text = element_text(size = 22),
         legend.title = element_text(color = "white"))
 
-
-
-
-
+  ### ------------  Boxplot: percent error  ----------------
+  ### Shows if a specific lake consistently has high differences
+  ### between phytoPAM and extracted chla
+ggplot(chla, aes(x=Site, y= error)) + 
+  geom_boxplot() +
+  ylab("Percent Error") +
+  theme(panel.background = element_blank(),
+        plot.title = element_text(size = 24, color = "black"),
+        panel.grid.major = element_line(color = "black"),
+        axis.title.y = element_text(size = 24),
+        axis.text.y = element_text(size = 24),
+        axis.text.x = element_text(size = 24, color = "black", 
+                                   angle = 45, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        strip.text = element_text(size = 24, color = "black"), ##text of graph titles in facet wrap
+        legend.text = element_text(size = 24),
+        legend.title = element_text(size = 24),
+        panel.grid.major.y = element_blank(),
+        axis.line.x = element_line(color = "black"),
+        axis.line.y = element_line(color = "black"),
+        legend.position = "bottom",
+        legend.key = element_blank())
 
 
 
 #########################################################################
   ####################### LINEAR REGRESSION ##########################
 
-chla<-na.omit(chla)
-chla$fit_error <- factor(chla$fit_error, levels = c("0","0-1", "> 1"))
-
+  ### Correlate between PhytoPAM and extracted chla
+  ### stat_smooth() shows the confidence interval
+  ### stat_poly() calculates the linear equation
+  ### stat_corr() calculated the correlation coefficient
 ggplot(chla2, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
   geom_point(colour="black", size = 4) + 
   stat_smooth(method = 'lm', aes(color = 'linear'), se = TRUE) + ## Turns on confidence intervals
@@ -141,8 +145,7 @@ chla3<-chla %>%
 #########################################################################
   ###################### STACKED AREA PLOT ###########################
 
-  
-  ## Transform phytoPAM chl-a columns for stacked area plotting
+    ## Transform phytoPAM chl-a columns for stacked area plotting
 data3<-pivot_longer(pam_data,8:11,names_to = "phyto", values_to = "chl")
 
   ## Subset data by year
@@ -170,28 +173,3 @@ ggplot(data.2020, aes(x = date, y = chl, fill = phyto), na.rm = TRUE) +
   scale_fill_manual(values=c("#CCCC00","#996600","#006600","#66CCCC"))
   
 
-########################################################################
-  #########################  BOX PLOTS  ############################
-
-colnames(chla)[colnames(chla)=="rrror"] <-"error"
-
-ggplot(chla, aes(x=Site, y= error)) + 
-  geom_boxplot() +
-  ylab("Percent Error") +
-  #facet_wrap(~Site, scale = "free") +
-  theme(panel.background = element_blank(),
-        plot.title = element_text(size = 24, color = "black"),
-        panel.grid.major = element_line(color = "black"),
-        axis.title.y = element_text(size = 24),
-        axis.text.y = element_text(size = 24),
-        axis.text.x = element_text(size = 24, color = "black", 
-                                   angle = 45, hjust = 1),
-        panel.grid.major.x = element_blank(),
-        strip.text = element_text(size = 24, color = "black"), ##text of graph titles in facet wrap
-        legend.text = element_text(size = 24),
-        legend.title = element_text(size = 24),
-        panel.grid.major.y = element_blank(),
-        axis.line.x = element_line(color = "black"),
-        axis.line.y = element_line(color = "black"),
-        legend.position = "bottom",
-        legend.key = element_blank())
