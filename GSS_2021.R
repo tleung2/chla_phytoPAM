@@ -70,12 +70,16 @@ PAMdata4<- pivot_longer(PAMdata3, cols = c(8:11),
 
   ### 2) Make boxplot and group by taxa
   ### scale_fill_discrete(labels = c()) --> manually assign legend labels
-ggplot(PAMdata4, aes(x = Month, y = chla, fill = taxa)) +
+  ### make new column (order) so that plot is in order: blue, brown, green, PE 
+PAMdata4$order <- factor(PAMdata4$taxa, levels = c("cyano_chla", "brown_chla",
+                      "green_chla", "PE_chla"))
+ggplot(PAMdata4, aes(x = Month, y = chla, fill = order)) +
   geom_boxplot() +
   labs(y = expression(paste('PhytoPAM Chl a (', mu, 'g/L)'))) +
-  scale_fill_discrete(labels = c("'Brown' group", "'Blue' group",
-                                 "'Green' group","'Red' group")) + 
-  #facet_wrap(.~Year, scale = "free", ncol = 1) +
+  scale_fill_manual(values = c("#66CCCC", "#FFFF00", "#99CC00", "#FF9900"),
+                    labels = c("'Blue' group", "'Brown' group",
+                               "'Green' group","'Red' group")) +
+  facet_wrap(.~order, scale = "free", ncol = 2) +
   theme(panel.background = element_blank(),
         axis.title.y = element_text(size = 22),
         axis.title.x = element_text(size = 22),
