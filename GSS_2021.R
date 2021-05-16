@@ -73,6 +73,8 @@ PAMdata4<- pivot_longer(PAMdata3, cols = c(8:11),
   ### make new column (order) so that plot is in order: blue, brown, green, PE 
 PAMdata4$order <- factor(PAMdata4$taxa, levels = c("cyano_chla", "brown_chla",
                       "green_chla", "PE_chla"))
+
+  ### Make boxplot using ggplot
 ggplot(PAMdata4, aes(x = Month, y = chla, fill = order)) +
   geom_boxplot() +
   labs(y = expression(paste('PhytoPAM Chl a (', mu, 'g/L)'))) +
