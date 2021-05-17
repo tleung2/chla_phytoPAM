@@ -73,6 +73,13 @@ PAMdata4<- pivot_longer(PAMdata3, cols = c(8:11),
   ### make new column (order) so that plot is in order: blue, brown, green, PE 
 PAMdata4$order <- factor(PAMdata4$taxa, levels = c("cyano_chla", "brown_chla",
                       "green_chla", "PE_chla"))
+  ### rename months to make them shorter
+PAMdata4$Month <- gsub("August", "Aug", PAMdata4$Month)
+PAMdata4$Month <- gsub("September", "Sept", PAMdata4$Month)
+PAMdata4$Month <- gsub("June", "Jun", PAMdata4$Month)
+PAMdata4$Month <- gsub("July", "Jul", PAMdata4$Month)
+PAMdata4$Month <- factor(PAMdata4$Month, levels = c("May", "Jun",
+                                                   "Jul", "Aug", "Sept"))
 
   ### Make boxplot using ggplot
 ggplot(PAMdata4, aes(x = Month, y = chla, fill = order)) +
@@ -81,16 +88,16 @@ ggplot(PAMdata4, aes(x = Month, y = chla, fill = order)) +
   scale_fill_manual(values = c("#66CCCC", "#FFFF00", "#99CC00", "#FF9900"),
                     labels = c("'Blue' group", "'Brown' group",
                                "'Green' group","'Red' group")) +
-  facet_wrap(.~order, scale = "free", ncol = 2) +
+  facet_wrap(.~order, scale = "free_y", ncol = 2) +
   theme(panel.background = element_blank(),
-        axis.title.y = element_text(size = 22),
-        axis.title.x = element_text(size = 22),
-        axis.text = element_text(size = 22),
+        axis.title.y = element_text(size = 14, color = "black"),
+        axis.title.x = element_text(size = 14, color = "black"),
+        axis.text = element_text(size = 14, color = "black"),
         axis.line = element_line(color = "black"),
-        strip.text = element_text(size = 22),
-        legend.position = "bottom",
+        strip.text = element_text(size = 14, color = "black"),
+        legend.position = "none",
         legend.key = element_blank(),
-        legend.text = element_text(size = 22),
+        legend.text = element_text(size = 14),
         legend.title = element_text(color = "white"))
 
   ### ------------  Boxplot: percent error  ----------------
