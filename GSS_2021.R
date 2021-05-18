@@ -88,16 +88,16 @@ ggplot(PAMdata4, aes(x = Month, y = chla, fill = order)) +
   scale_fill_manual(values = c("#66CCCC", "#FFFF00", "#99CC00", "#FF9900"),
                     labels = c("'Blue' group", "'Brown' group",
                                "'Green' group","'Red' group")) +
-  facet_wrap(.~order, scale = "free_y", ncol = 2) +
+  facet_wrap(.~order, scale = "free_y", ncol = 1) +
   theme(panel.background = element_blank(),
-        axis.title.y = element_text(size = 14, color = "black"),
-        axis.title.x = element_text(size = 14, color = "black"),
-        axis.text = element_text(size = 14, color = "black"),
+        axis.title.y = element_text(size = 12, color = "black"),
+        axis.title.x = element_text(size = 12, color = "black"),
+        axis.text = element_text(size = 12, color = "black"),
         axis.line = element_line(color = "black"),
-        strip.text = element_text(size = 14, color = "black"),
+        strip.text = element_text(size = 12, color = "black"),
         legend.position = "none",
         legend.key = element_blank(),
-        legend.text = element_text(size = 14),
+        legend.text = element_text(size = 12),
         legend.title = element_text(color = "white"))
 
   ### ------------  Boxplot: percent error  ----------------
@@ -133,20 +133,21 @@ ggplot(chla, aes(x=Site, y= error)) +
   ### stat_poly() calculates the linear equation
   ### stat_corr() calculated the correlation coefficient
 ggplot(chla2, aes(x=Acetone_chla, y=PhytoPAM_chla)) + 
-  geom_point(colour="black", size = 4) + 
-  stat_smooth(method = 'lm', aes(color = 'linear'), se = TRUE) + ## Turns on confidence intervals
-  stat_poly_eq(aes(label = ..eq.label..), formula = y ~ x, parse = TRUE, size = 6) +                                 ## Turns on equation
-  stat_cor(label.x.npc = "center", label.y.npc = "top", size = 6) + ## Turns on r value
-  labs(x = expression(paste('PhytoPAM-derived Chl a (', mu, 'g/L)')),
-       y = expression(paste('Spectrophotometric Chl a (', mu, 'g/L)'))) +
+  geom_point(colour="black", size = 1) + 
+  stat_smooth(method = 'lm', color = "black", se = FALSE, fullrange = TRUE) + ## Turns on confidence intervals
+  stat_poly_eq(aes(label = ..eq.label..), formula = y ~ x, parse = TRUE, size = 3) +                                 ## Turns on equation
+  #stat_cor(label.x.npc = "center", label.y.npc = "top", size = 6) + ## Turns on r value
+  geom_abline(color = "black", lty = 2, intercept = 0, slope = 1) +
+  labs(y = expression(paste('PhytoPAM Chl a (', mu, 'g/L)')),
+       x = expression(paste('Spectrophotometric Chl a (', mu, 'g/L)'))) +
   #scale_y_continuous(position = "right") +  ## places y scale on right
-  facet_wrap(~fit_error, scales = "free", ncol = 3) +
+  #facet_wrap(~fit_error, scales = "free", ncol = 3) +
   theme_classic() +
-  theme(axis.text.y.left = element_text(size=28, color = "black"), 
-        axis.text.x.bottom = element_text(size=28, color = "black"),
-        axis.title.x = element_text(size=28),
-        axis.title.y = element_text(size=28),
-        strip.text = element_text(size = 28))
+  theme(axis.text.y.left = element_text(size=12, color = "black"), 
+        axis.text.x.bottom = element_text(size=12, color = "black"),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        strip.text = element_text(size = 12))
 
 chla2<- chla %>%
   filter(Site %in% c("Prairie Rose", "Lake Three Fires", "Honey Creek Resort",
