@@ -128,6 +128,10 @@ ggplot(chla, aes(x=Site, y= error)) +
 #########################################################################
   ####################### LINEAR REGRESSION ##########################
 
+  ### Run linear regression model 
+  ### Format: lm(Y~X, data = df)
+lm.chla<-lm(PhytoPAM_chla~Acetone_chla, data=chla2)
+summary(lm.chla)  
   ### Correlate between PhytoPAM and extracted chla
   ### stat_smooth() shows the confidence interval
   ### stat_poly() calculates the linear equation
